@@ -1,0 +1,218 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+
+<title>Analysis of U.S. Elections with Shiny for Python</title>
+</head>
+<body>
+<!-- <script type="text/javascript" src="header.js"></script> -->
+<!--------------------------------------------------------------------------------------------------------------->
+<font color="red"><h1>Analysis of U.S. Elections with Shiny for Python</h1></font>
+<p>
+<a href="#rockland_vs"><b>Analysis of Presidential Vote Shares in Rockland County, New York in 2024</b></a><br>
+<a href="#rockland_do"><b>Analysis of Dropoff between the Presidential and Senate races in Rockland County, New York in 2024</b></a><br>
+<a href="#rockland_source"><b>Source of the Rockland County Data and the Cause of Missing Data</b></a><br>
+<p>
+<a name="rockland_vs"><font color="red"><h3>Analysis of Presidential Vote Shares in Rockland County, New York in 2024</h3></font>
+<p>
+On June 26, 2025, Newsweek posted an article titled <A HREF="https://www.newsweek.com/2024-election-results-lawsuit-documents-2091077">"Exclusive: 2024 Election Results Lawsuit Advances as Documents Requested"</A>.  It describes a lawsuit concerning the 2024 Presidential and Senate elections in Rockland County, New York and begins as follows:
+<p><b>
+The lead plaintiff in a legal case <A HREF="https://www.newsweek.com/2024-election-lawsuit-advances-2083391">questioning the accuracy of the 2024 election</A>, has submitted 15 pages of <A HREF="https://smartelections.us/lawsuits-1#b2742d7f-ae33-421f-9125-c65b35460b91">document requests</A> as part of the discovery process.
+<p>
+SMART Legislation, the action arm of nonpartisan watchdog group SMART Elections, also submitted <A HREF="https://smartelections.us/lawsuits-1#66442579-3260-47e2-b79b-55170904c4b3">a series of questions</A> to the Rockland County Board of Elections in New York this week, according to court filings reviewed by Newsweek.
+<p>
+"The best way to reassure the public about the accuracy of the election results in Rockland County, New York, is to conduct a full, transparent, hand recount of the 2024 Presidential and <A HREF="https://www.newsweek.com/topic/senate">Senate</A> elections," Lulu Friesdat, the founder and executive director of SMART Legislation, said in a statement to Newsweek. "That is why we have requested it, and so far, the judge seems to agree."
+</b><p>
+<A HREF="https://electiontruthalliance.org/">Election Truth Alliance</A> is a <A HREF="https://electiontruthalliance.org/about-us">non-profit, non-partisan organization founded in December of 2024</A> that has worked with <A HREF="https://smartelections.us/">SMART Elections</A>.  They have posted a YouTube video titled <A HREF="https://www.youtube.com/watch?v=fbhlJRe8FuM&t=2s">Rockland County, New York | 2024 | SMART Elections Lawsuit | Election Truth Alliance Livestream Clip</A>.  At about 55 seconds into the video, the speaker displays the following plot:
+<p>
+<img src="http://econdataus.com/eta_rockland1.png" alt="">
+<p>
+This scatter plot shows the vote shares or the main presidential candidates (Harris and Trump) by the number of total votes by precinct.  The speaker points out that most of the precinct vote shares seem to be distributed fairly normally, centered arount 50 percent, but that there are a number of Harris vote shares are very low, close to zero percent and a number of Trump vote shares are very high, near 100 percent.
+<p>
+It is possible to check these numbers in the Python Shiny application at <A HREF="https://econdata.shinyapps.io/voting_data/">https://econdata.shinyapps.io/voting_data/</A>.  Going to that URL and selecting NY for STATE should set the default selections of 2024 for YEAR, 1105_GE_vtype for ELECTION, Rockland for COUNTY, Total for VOTETYPE, and U.S. President for OFFICE.  Those selections will display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_plot_pres24NY_rockland.png" alt="">
+<p>
+As can be seen, this plot looks to be very nearly identical to the one from the Election Truth Alliance video.  In addition, the precincts for which the Harris total vote share was close to zero can be found via the following steps:
+<p>
+<ol>
+<li>Click on the Text tab. This displays a table showing key info for all of the data in the plot.
+<li>Click once on the voteshare title in the upper right of the table. A down arrow (v) appears next to the voteshare title to indicate that the table is now sorted from the highest to lowest voteshare.
+<li>Click again on the voteshare title. An up arrow (^) now appears next to the voteshare titles, indicating that the table is now sorted from the lowest to highest.
+<li>Scroll down the table past the rows with zero for total and votes and blanks for voteshares. These are missing values, explained in a later section.
+</ol>
+<p>
+Scrolling past the missing values will display the following:
+<p>
+<img src="http://econdataus.com/vdata_text_pres24NY_rockland_low_vs.png" alt="">
+<p>
+As can be seen, the lowest 14 vote shares are all for Kamala Harris and occurred in Ramapo precincts.  Three had zero votes for Harris and another 10 were below 1 percent.
+<p>
+<a name="rockland_do"><font color="red"><h3>Analysis of Dropoff between the Presidential and Senate races in Rockland County, New York in 2024</h3></font>
+<p>
+On June 10, 2025, Newsweek posted an article titled <A HREF="https://www.newsweek.com/2024-election-lawsuit-advances-2083391">"2024 Election Results Under Scrutiny as Lawsuit Advances"</A>.  Following is an excerpt from that article:
+<p><b>
+Max Bonamente, a professor of physics and astronomy at the University of Alabama in Huntsville and the author of the Statistics and Analysis of Scientific Data, said in a paper that the 2024 presidential election results were statistically highly unlikely in four of the five towns in Rockland County when compared with 2020 results.
+</b><p>
+Further on the article states:
+<p><b>
+Max Bonamente said in <A HREF="https://img1.wsimg.com/blobby/go/5275a097-faa2-4d46-8f25-54b36ea675b1/Statistical%20Analysis%20of%20Rockland%20County%20NY%20Ele.pdf">a paper</A> on the voting data from Rockland County: "These data would require extreme sociological or political causes for their explanation, and would benefit from further assurances as to their fidelity."
+</b><p>
+<A HREF="https://img1.wsimg.com/blobby/go/5275a097-faa2-4d46-8f25-54b36ea675b1/Statistical%20Analysis%20of%20Rockland%20County%20NY%20Ele.pdf">the paper</A> contains plots showing the drop-offs in the 87 precincts of Clarkstown, 33 precincts of Haverstraw, 51 precincts of Orangetown, and 14 precincts of Stony Point.  Following is the plot for the 33 precincts of Haverstraw:
+<p>
+<img src="http://econdataus.com/vdata_dropoff_pres_sen24NY_rockland_hav0.png" alt="">
+<p>
+This plot can likewise be reproduced in the Python Shiny app.  However, because it involves data from two races (the Presidential and Senate races), they cannot be fully defined by the STATE through the OFFICE select lists as these select lists can only specify one race at at time.  Instead, the two races can be specified as follows:
+<p>
+<ol>
+<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data/">https://econdata.shinyapps.io/voting_data/</A>
+<li>Set STATE to NY
+<li>Verify that YEAR is set to 2024
+<li>Verify that ELECTION is set to 1105_GE_vtype
+<li>Vefiry that COUNTY is set to Rockland
+<li>Verify that TOTAL is set to Total
+<li>Verify that OFFICE is set to U.S. President
+<li>Press the Add button below the OFFICE select list. Within a few seconds, this should populate the RACES select list and the PRECINCT GROUP select list.
+<li>Change the OFFICE select list to U.S. Senator
+<lI>Press the Add button. This should add the Senator race below the Presidential race in the RACES select list.
+<li>Click the Dropoff tab
+<li>Set PRECINCT GROUP to Haverstraw
+</ol>
+<p>This should produce the following plot:
+<p>
+<img src="http://econdataus.com/vdata_dropoff_pres_sen24NY_rockland_hav.png" alt="">
+<p>
+A careful comparison of this plot with the one from the paper above shows that all of the location of all points appear to be identical except for precinct 27 which is missing in the above plot.  Clicking on the Text tab and "NY_241105_U.S. President" in the RACES select list and then pressing the votes title twice will display an up arrow next to the votes title indicating that the table is now sorted from the lowest to the highest number of votes as seen below:
+<p>
+<img src="http://econdataus.com/vdata_text_pres24NY_rockland_hav_byvotes.png" alt="">
+<p>
+As can be seen, precinct Haverstraw 27 shows zero votes for both Harris and Trump.  By the way, you can get a plot that more closely resembles that in the paper by clicking back on the Dropoff tab, unchecking the "Dot Size by Total" checkbox, and changing "Max Dot Size" to 10.  This should display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_dropoff_pres_sen24NY_rockland_hav_nosize.png" alt="">
+<p>
+The next section looks at the source of the Rockland County data and the reason that precinct Haverstraw 27 shows zero votes. 
+<p>
+<a name="rockland_source"><font color="red"><h3>Source of the Rockland County Data and the Cause of Missing Data</h3></font>
+<p>
+The reason that precinct Haverstraw 27 shows zero votes for both Harris and Trump is likely due to the original source data.  The source for the Rockland County data is the JSON file that can be downloaded by clicking the "Media Export" link at the bottom of <A HREF="https://app.enhancedvoting.com/results/public/rockland-county-ny/elections/GE2024Results">Rockland County's Election Night Reporting page for that election</A> or the a corresponding <A HREF="https://app.enhancedvoting.com/results/public/rockland-county-ny/elections/GE2024Results/reports">Result Reports page</A>.  The contents of this JSON file can be viewed by opening it in a Chrome browser and clicking on the Pretty-print checkbox in the upper left.  Searching for "Haverstraw 27" and going to the first occurance will show the following contents:
+<pre>
+              {
+                "id": "353",
+                "name": "Haverstraw 27",
+                "isVirtual": false,
+                "voteCount": 21,
+                "reportingStatus": "Fully Reported",
+                "groupResults": [
+                  {
+                    "groupName": "Election Day",
+                    "voteCount": null,
+                    "isFromVirtualPrecinct": false
+                  },
+                  {
+                    "groupName": "Early Voting",
+                    "voteCount": null,
+                    "isFromVirtualPrecinct": false
+                  },
+                  {
+                    "groupName": "Absentee Mail",
+                    "voteCount": null,
+                    "isFromVirtualPrecinct": false
+                  }
+                ]
+              },
+              {
+                "id": "356",
+                "name": "Haverstraw 28",
+                "isVirtual": false,
+                "voteCount": 282,
+                "reportingStatus": "Fully Reported",
+                "groupResults": [
+                  {
+                    "groupName": "Election Day",
+                    "voteCount": 150,
+                    "isFromVirtualPrecinct": false
+                  },
+                  {
+                    "groupName": "Early Voting",
+                    "voteCount": 97,
+                    "isFromVirtualPrecinct": false
+                  },
+                  {
+                    "groupName": "Absentee Mail",
+                    "voteCount": 35,
+                    "isFromVirtualPrecinct": false
+                  }
+                ]
+              },
+</pre>
+This shows a total voteCount of 21 for Haverstraw 27 but the voteCounts for "Election Day", "Early Voting", and "Absentee Mail" all show as null.  On the other hand, all voteCounts are shown for Haverstraw 28.  This is likely because the some or all of the voteCounts for specific votetypes are considered to be so low as to create privacy concerns.  These voteCounts are for Kamala Harris.  Searching for the next occurance of "Haverstraw 27" will show the following contents:
+<pre>
+              {
+                "id": "353",
+                "name": "Haverstraw 27",
+                "isVirtual": false,
+                "voteCount": 33,
+                "reportingStatus": "Fully Reported",
+                "groupResults": [
+                  {
+                    "groupName": "Election Day",
+                    "voteCount": null,
+                    "isFromVirtualPrecinct": false
+                  },
+                  {
+                    "groupName": "Early Voting",
+                    "voteCount": null,
+                    "isFromVirtualPrecinct": false
+                  },
+                  {
+                    "groupName": "Absentee Mail",
+                    "voteCount": null,
+                    "isFromVirtualPrecinct": false
+                  }
+                ]
+              },
+              {
+                "id": "356",
+                "name": "Haverstraw 28",
+                "isVirtual": false,
+                "voteCount": 198,
+                "reportingStatus": "Fully Reported",
+                "groupResults": [
+                  {
+                    "groupName": "Election Day",
+                    "voteCount": 110,
+                    "isFromVirtualPrecinct": false
+                  },
+                  {
+                    "groupName": "Early Voting",
+                    "voteCount": 70,
+                    "isFromVirtualPrecinct": false
+                  },
+                  {
+                    "groupName": "Absentee Mail",
+                    "voteCount": 18,
+                    "isFromVirtualPrecinct": false
+                  }
+                ]
+              },
+</pre>
+This shows a total voteCount of 33 for Haverstraw 27 but the voteCounts for "Election Day", "Early Voting", and "Absentee Mail" again show as null.  As before, all voteCounts are shown for Haverstraw 28.  These voteCounts are for Donald Trump.  The above voteCounts of 21 for Harris and 33 for Trump can be seen by going to the <A HREF="https://app.enhancedvoting.com/results/public/rockland-county-ny/elections/GE2024Results">Rockland County's Election Night Reporting page for that election</A>, clicking on the "View results by election district" link below the "Electors for President and Vice President" results, scrolling down to the "Haverstraw 27" section, and clicking on the "Vote Method" checkbox.  This should display the following:
+<p>
+<img src="http://econdataus.com/vdata_enr_pres24NY_rockland_hav27_votemethod.png" alt="">
+<p>
+As can be seen, Rockland County's ENR page shows Total Votes for precinct Haverstraw 27 but does not show the vote countes for Election Day, Early Voting, and Absentee Mail.  This program takes it's input from CSV files in which the columns are county, precinct, office, district, party, candidate, votes, and votetype and each row contains the number of votes for each case of the other columns.  The current program that converts the original JSON file to this type of CSV file only grabs the data for the votetypes of Election Day, Early Voting, and Absentee Mail and calculates the total votes by summing the votes for these 3 votetypes.  I plan to change this program to grab the total votes shown above.  This should fix this particular problem of missing data in very small precincts.
+ <hr>
+If anyone should run into any issues or have any suggestions for additional features, feel free to let me know via the Contact Form in the left margin of <A HREF="http://usbudget.blogspot.com/">this page</A>.
+<hr>
+<A HREF="https://econdataus.com/election24.htm">2024 U.S. Election</A><br>
+<p>
+<script type="text/javascript" src="footer.js"></script>
+<noscript><div class="statcounter"><a title="free web stats"
+href="http://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="//c.statcounter.com/8657157/0/2dd97572/1/" alt="free
+web stats"></a></div></noscript>
+<!-- End of StatCounter Code for Default Guide -->
+</body>
+</html>
