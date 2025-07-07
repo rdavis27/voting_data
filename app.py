@@ -81,6 +81,7 @@ app_ui = ui.page_sidebar(
         ui.input_checkbox("demrep_comb","DEM/REP combine", True),
         ui.input_checkbox("calctotal","Calculate Total", True),
         ui.input_checkbox("varysize","Dot Size by Total", True),
+        ui.input_checkbox("plotvotes","Plot votes (else voteshares)", True),
         ui.input_numeric("maxsize","Max Dot Size",value=15,min=1),
         ui.input_numeric("decimals","Decimal Places",value=1,min=0),
         width=350
@@ -171,7 +172,7 @@ def server(input, output, session):
         nn = []
         oo = []
         for i in range(0,len(list(pp)),1):
-            match = re.match(r"([a-zA-Z ]+)(\d+)([a-zA-Z0-9\(\) ]*)", list(pp)[i])
+            match = re.match(r"([a-zA-Z ]+)(\d+)([a-zA-Z0-9\(\) ]*)", str(list(pp)[i]))
             if match:
                 letters = match.group(1)
                 numbers = int(match.group(2))
@@ -236,11 +237,12 @@ def server(input, output, session):
 
     def set_pgroups(pp):
         lgroups = ["(all)"]
-        for i in range(0,len(list(pp))-1,1):
-            match = re.match(r"([a-zA-Z ]+)(\d+)([a-zA-Z0-9\(\) ]*)", list(pp)[i])
-            if match:
-                letters = match.group(1)
-                lgroups.append(letters.strip())
+        if (pp.dtype != "int64"):
+            for i in range(0,len(list(pp))-1,1):
+                match = re.match(r"([a-zA-Z ]+)(\d+)([a-zA-Z0-9\(\) ]*)", str(list(pp)[i]))
+                if match:
+                    letters = match.group(1)
+                    lgroups.append(letters.strip())
         choices = list(set(lgroups))
         choices.sort()
         ui.update_select(
@@ -294,7 +296,12 @@ def server(input, output, session):
             dd = dd.rename(columns={'office':'office1','votes':'votes1','total':'total1','candidate':'candidate1','voteshare':'voteshare1'})
             ee = ee.rename(columns={'office':'office2','votes':'votes2','total':'total2','candidate':'candidate2','voteshare':'voteshare2'})
             ff = pd.merge(dd, ee, how="outer", on=["county", "precinct", "district","party","votetype"])
-            ff['dropoff'] = ff['votes1'] - ff['votes2']
+            if input.plotvotes():
+                ff['dropoff'] = ff['votes1'] - ff['votes2']
+                yunits = "Votes"
+            else:
+                ff['dropoff'] = ff['voteshare1'] - ff['voteshare2']
+                yunits = "Voteshares"
             pgroup = input.pgroup()
             if (type(pgroup) != type(None) and pgroup != "(all)"):
                 ff = ff[ff['precinct'].str.startswith(pgroup)]
@@ -324,7 +331,7 @@ def server(input, output, session):
                             title=title, height = 600,
                             hover_data=["precinct","county","candidate1","candidate2","party"],
                             labels={
-                                "dropoff":"Dropoff in "+input.votetype()+" Votes",
+                                "dropoff":"Dropoff in "+input.votetype()+" "+yunits,
                                 "index":"Precinct<br><i>Sources: see https://econdataus.com/voting_data.htm</i>"
                             }
             )
@@ -405,6 +412,7 @@ def server(input, output, session):
     def _():
         global rlist
         print("START Clear Races") #DEBUG_PRINT
+        input.clear_races()
         rlist = {}
         ui.update_select(
             "races",
@@ -448,6 +456,10 @@ def server(input, output, session):
                 )
                 choices = sorted(list(set(zz.office)))
                 choice0 = choices[0]
+                if (choices.__contains__("President of the US")):
+                    zz['office'].replace("President of the US", "US President", inplace=True)
+                    choices = sorted(list(set(zz.office)))
+                    choice0="US President"
                 if (choices.__contains__("President")):
                     choice0="President"
                 if (choices.__contains__("U.S. President")):
