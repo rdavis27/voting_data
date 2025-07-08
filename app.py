@@ -81,7 +81,7 @@ app_ui = ui.page_sidebar(
         ui.input_checkbox("demrep_comb","DEM/REP combine", True),
         ui.input_checkbox("calctotal","Calculate Total", True),
         ui.input_checkbox("varysize","Dot Size by Total", True),
-        ui.input_checkbox("plotvotes","Plot votes (else voteshares)", True),
+        ui.input_checkbox("plot_percent","Plot percent", False),
         ui.input_numeric("maxsize","Max Dot Size",value=15,min=1),
         ui.input_numeric("decimals","Decimal Places",value=1,min=0),
         width=350
@@ -296,12 +296,14 @@ def server(input, output, session):
             dd = dd.rename(columns={'office':'office1','votes':'votes1','total':'total1','candidate':'candidate1','voteshare':'voteshare1'})
             ee = ee.rename(columns={'office':'office2','votes':'votes2','total':'total2','candidate':'candidate2','voteshare':'voteshare2'})
             ff = pd.merge(dd, ee, how="outer", on=["county", "precinct", "district","party","votetype"])
-            if input.plotvotes():
+            if input.plot_percent():
+                ff['dropoff'] = 100 * (ff['votes1'] - ff['votes2']) / ff["votes1"]
+                ff['dropoff'][ff['dropoff'] == -np.inf] = None
+                ff['dropoff'][ff['dropoff'] ==  np.inf] = None
+                yunits = "Votes (percent)"
+            else:
                 ff['dropoff'] = ff['votes1'] - ff['votes2']
                 yunits = "Votes"
-            else:
-                ff['dropoff'] = ff['voteshare1'] - ff['voteshare2']
-                yunits = "Voteshares"
             pgroup = input.pgroup()
             if (type(pgroup) != type(None) and pgroup != "(all)"):
                 ff = ff[ff['precinct'].str.startswith(pgroup)]
@@ -336,11 +338,18 @@ def server(input, output, session):
                             }
             )
             demavg = ff[ff.party == "DEM"].dropoff.mean()
-            print(demavg) #DEBUG_DO - output this?
             repavg = ff[ff.party == "REP"].dropoff.mean()
-            print(repavg) #DEBUG_DO - output this?
-            fig.add_hline(y=demavg, line_color="blue")
-            fig.add_hline(y=repavg, line_color="red")
+            demvotes1 = ff[ff.party == "DEM"].votes1.sum()
+            demvotes2 = ff[ff.party == "DEM"].votes2.sum()
+            demtot = 100 * (demvotes1 - demvotes2) / demvotes1
+            repvotes1 = ff[ff.party == "REP"].votes1.sum()
+            repvotes2 = ff[ff.party == "REP"].votes2.sum()
+            reptot = 100 * (repvotes1 - repvotes2) / repvotes1
+            fig.add_hline(y=demavg, line_color="blue", annotation_text=demavg.round(input.decimals()))
+            fig.add_hline(y=repavg, line_color="red" , annotation_text=repavg.round(input.decimals()))
+            fig.add_hline(y=demtot, line_color="blue", line_dash="dash", annotation_text=demtot.round(input.decimals()))
+            fig.add_hline(y=reptot, line_color="red" , line_dash="dash", annotation_text=reptot.round(input.decimals()))
+            print("add_hline("+str(demavg)+"|"+str(repavg)+"|"+str(demtot)+"|"+str(reptot)+")") #DEBUG_PRINT
             return(fig)
         else:
             print("WARNING: Must add at least two races to RACES textbox")

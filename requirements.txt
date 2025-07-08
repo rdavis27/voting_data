@@ -1,7 +1,6 @@
 plotly
 pandas
 numpy
-re
 shiny
 shinywidgets
 os
