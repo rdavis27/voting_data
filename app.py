@@ -92,6 +92,10 @@ app_ui = ui.page_sidebar(
             output_widget("plotly")
         ),
         ui.nav_panel(
+            "Turnout",
+            output_widget("turnout")
+        ),
+        ui.nav_panel(
             "Dropoff",
             output_widget("dropoff")
         ),
@@ -109,8 +113,9 @@ app_ui = ui.page_sidebar(
 
 def server(input, output, session):
     def filter_data(dd):
-        print("START server") #DEBUG_PRINT
-        dd = dd.replace({np.nan: 0})
+        print("START filter_data(dd)") #DEBUG_PRINT
+        #dd = dd.replace({np.nan: 0}) #DEBUG_TEST REMOVE
+        dd = dd.replace(np.nan, 0) #DEBUG_TEST REMOVE
         dd = dd[dd['party'] != 0]
         if (input.county() != "(all)"):
             dd = dd[dd['county'] == input.county()]
@@ -120,7 +125,7 @@ def server(input, output, session):
                 if len(tt) > 0:
                     dd = tt
                     dd = dd.assign(votetype="Total")
-                    dd = dd.groupby(['county','precinct','office','district','party','candidate','votetype'], as_index=False)[['votes']].agg('sum')
+                    dd = dd.groupby(['county','precinct','office','district','party','candidate','votetype','registered','ballots'], as_index=False)[['votes']].agg('sum')
         else:
             dd = dd[dd['votetype'] == input.votetype()]
         gg = dd.groupby(['county','precinct','office','district','votetype'], as_index=False)[['votes']].agg('sum')
@@ -138,7 +143,7 @@ def server(input, output, session):
                 srepcand = srepcand.replace("REP ","")
                 ee['candidate'] = ee['candidate'].apply(lambda x:srepcand if pd.notnull(x) and pd.Series(x).str.contains(srepcand, regex=True)[0] else x)
                 ee.loc[ee['candidate'] == srepcand, 'party'] = "REP"
-                ee = ee.groupby(['county','precinct','office','district','party','candidate','votetype','total'], as_index=False)[['votes']].agg('sum')
+                ee = ee.groupby(['county','precinct','office','district','party','candidate','votetype','registered','ballots','total'], as_index=False)[['votes']].agg('sum')
                                
         ee = ee.assign(voteshare = 100 * ee['votes'] / ee['total'])
         if (input.demrep()):
@@ -167,6 +172,7 @@ def server(input, output, session):
                     set_pgroups(dd.precinct)
 
     def get_precint_indices(ff):
+        print("START get_precint_indices(ff)") #DEBUG_PRINT
         pp = list(set(ff.precinct))
         ll = []
         nn = []
@@ -197,6 +203,7 @@ def server(input, output, session):
     def get_race():
         global state0
         global edate0
+        print("START get_race()") #DEBUG_PRINT
         ee = None
         if (len(rlist) > 0):
             rname = input.races()[0]
@@ -215,6 +222,7 @@ def server(input, output, session):
     def get_racei(ii):
         global state0
         global edate0
+        print("START get_racei(ii)") #DEBUG_PRINT
         ee = None
         if (len(rlist) > ii):
             rname = list(rlist.keys())[ii]
@@ -236,6 +244,7 @@ def server(input, output, session):
         return(ee)
 
     def set_pgroups(pp):
+        print("START set_pgroups(pp)") #DEBUG_PRINT
         lgroups = ["(all)"]
         if (pp.dtype != "int64"):
             for i in range(0,len(list(pp))-1,1):
@@ -257,7 +266,9 @@ def server(input, output, session):
         print("START plotly()") #DEBUG_PRINT
         dd = get_race()
         if (type(dd) != type(None)):
+            print("BEFORE filter_data, len(dd)="+str(len(dd))) #DEBUG_TMP
             ee = filter_data(dd)
+            print(" AFTER filter_data, len(ee)="+str(len(ee))) #DEBUG_TMP
             pgroup = input.pgroup()
             if (type(pgroup) != type(None) and pgroup != "(all)"):
                 ee = ee[ee['precinct'].str.startswith(pgroup)]
@@ -272,7 +283,41 @@ def server(input, output, session):
                     title = input.county()+" County, "+state0+": "+list(ee.office)[0]+" Vote Share by Precinct Vote Total, "+edate0
                 else:
                     title = input.county()+" County, "+state0+": Candidate Vote Share by Precinct Vote Total, "+edate0
+            print("BEFORE scatter, len(ee)="+str(len(ee))) #DEBUG_TMP
             fig = px.scatter(ee, x='total', y='voteshare',
+                            size='size',
+                            size_max=input.maxsize(),
+                            color='party', opacity=0.5,
+                            title=title, height = 600,
+                            hover_data=["precinct","county","candidate","party","votes"],
+                            labels={
+                                "voteshare":"Party Vote Share (%)",
+                                "total":"Number of "+input.votetype()+" Votes by Precinct<br><i>Sources: see https://econdataus.com/voting_data.htm</i>"
+                            })
+            return(fig)
+    
+    @render_plotly
+    def turnout():
+        print("START turnout()") #DEBUG_PRINT
+        dd = get_race()
+        if (type(dd) != type(None)):
+            ee = filter_data(dd)
+            pgroup = input.pgroup()
+            if (type(pgroup) != type(None) and pgroup != "(all)"):
+                ee = ee[ee['precinct'].str.startswith(pgroup)]
+            ee = ee[ee['votetype'] == input.votetype()]
+            if input.varysize():
+                ee['size'] = ee['total']
+            else:
+                ee['size'] = 1
+            ee = ee.assign(turnout = 100 * ee['total'] / ee['registered'])
+            title = ""
+            if (type(input.county()) == str):
+                if (len(ee) > 0):
+                    title = input.county()+" County, "+state0+": "+list(ee.office)[0]+" Vote Share by Precinct Vote Total, "+edate0
+                else:
+                    title = input.county()+" County, "+state0+": Candidate Vote Share by Precinct Vote Total, "+edate0
+            fig = px.scatter(ee, x='turnout', y='voteshare',
                             size='size',
                             size_max=input.maxsize(),
                             color='party', opacity=0.5,
@@ -357,6 +402,7 @@ def server(input, output, session):
         
     @render.data_frame
     def summary_data():
+        print("START summary_data()") #DEBUG_PRINT
         dd = get_race()
         ee = filter_data(dd)
         pgroup = input.pgroup()
@@ -402,6 +448,7 @@ def server(input, output, session):
         if (input.state() != None and input.year() != None):
             ee = dd[dd['state'] == input.state()]
             ff = ee[ee['year'] == int(input.year())]
+            #ff = ff[ff['candidate'] != ""]
             choices = sorted(list(set(ff.election)))
             if (len(ff) > 0):
                 ui.update_select(
@@ -450,8 +497,36 @@ def server(input, output, session):
             if (exists(filepath)):
                 zz = pd.read_csv(filepath)
                 print(filepath+" FOUND") #DEBUG_PRINT
-                if ('votetype' not in zz):
-                    zz['votetype'] = "Total"
+                zz = zz[zz['precinct'] != "Total:"] #needed for Clarity files
+                if ('votetype' not in zz.columns): #DEBUG 250709
+                    zz['votetype'] = "total" #DEBUG 250710 - was Total
+                zz['office'] = zz['office'].replace('Registered', 'Registered Voters') #DEBUG fix for PA data
+                rr = zz[zz['office'] == "Registered Voters"]
+                if len(rr) > 0:
+                    rr = rr[rr['votetype'] == "total"]
+                    zz = zz[zz['office'] != "Registered Voters"]
+                    rr = rr.rename(columns={'votes': 'registered'})
+                    selected_columns = rr[['county', 'precinct', 'registered']]
+                    rr = selected_columns.copy()
+                    zz = pd.merge(zz, rr, how="left", on=["county", "precinct"])
+                    #zz = zz.assign(turnout = 100 * zz['votes'] / zz['registered'])
+                else:
+                    zz = zz.assign(registered = None)
+                    #zz = zz.assign(turnout = None)
+                bb = zz[zz['office'] == "Ballots Cast"]
+                if len(bb) > 0:
+                    bb = bb[bb['votetype'] == "total"]
+                    zz = zz[zz['office'] != "Ballots Cast"]
+                    bb = bb.rename(columns={'votes': 'ballots'})
+                    selected_columns = bb[['county', 'precinct', 'ballots']]
+                    bb = selected_columns.copy()
+                    zz = pd.merge(zz, bb, how="left", on=["county", "precinct"])
+                else:
+                    zz = zz.assign(ballots = None)
+                #zz = zz[zz['office'] != "Registered Voters"]
+                #zz = zz[zz['office'] != "Ballots Cast"]
+                #zz = zz[zz['party'] != ""]
+                zz = zz[pd.isna(zz['party']) == False]
                 print("##### FILE EXISTS #####") #DEBUG_PRINT
                 sortedlist = sorted(list(set(zz.county)))
                 if len(sortedlist) > 1:
