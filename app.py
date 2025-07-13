@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import re
 from shiny import App, reactive, render, ui
-from shinywidgets import output_widget, render_plotly
+from shinywidgets import output_widget, render_widget
 from os import listdir
 from os.path import isfile, join, exists
 datapath = "voting_data\\data"
@@ -86,6 +86,8 @@ app_ui = ui.page_sidebar(
         ui.input_checkbox("plot_percent","Plot percent", False),
         ui.input_numeric("maxsize","Max Dot Size",value=15,min=1),
         ui.input_numeric("decimals","Decimal Places",value=1,min=0),
+        ui.input_numeric("plot_height","Plot Height",value=600,min=0),
+        ui.input_numeric("plot_width" ,"Plot Width" ,value=1000,min=0),
         width=350
     ),
     ui.navset_tab(
@@ -267,7 +269,7 @@ def server(input, output, session):
         )
         return choices
 
-    @render_plotly
+    @render_widget
     def votes():
         print("START votes()") #DEBUG_PRINT
         dd = get_race()
@@ -295,10 +297,11 @@ def server(input, output, session):
                     title = input.county()+" County, "+state0+": Candidate Vote Share by "+area+" Vote Total, "+edate0
             print("BEFORE scatter, len(ee)="+str(len(ee))) #DEBUG_TMP
             fig = px.scatter(ee, x='total', y='voteshare',
+                            height = input.plot_height(), width=input.plot_width(),
                             size='size',
                             size_max=input.maxsize(),
                             color='party', opacity=0.5,
-                            title=title, height = 600,
+                            title=title,
                             hover_data=["precinct","county","candidate","party","votes"],
                             labels={
                                 "voteshare":"Party Vote Share (%)",
@@ -306,7 +309,7 @@ def server(input, output, session):
                             })
             return(fig)
     
-    @render_plotly
+    @render_widget
     def turnout():
         print("START turnout()") #DEBUG_PRINT
         dd = get_race()
@@ -335,10 +338,11 @@ def server(input, output, session):
                 else:
                     title = input.county()+" County, "+state0+": Candidate Vote Share by "+area+" Turnout Percentage, "+edate0
             fig = px.scatter(ee, x='turnout', y='voteshare',
+                            height = input.plot_height(), width=input.plot_width(),
                             size='size',
                             size_max=input.maxsize(),
                             color='party', opacity=0.5,
-                            title=title, height = 600,
+                            title=title,
                             hover_data=["precinct","county","candidate","party","votes"],
                             labels={
                                 "voteshare":"Party Vote Share (%)",
@@ -346,7 +350,7 @@ def server(input, output, session):
                             })
             return(fig)
     
-    @render_plotly
+    @render_widget
     def dropoff():
         print("START dropoff()") #DEBUG_PRINT
         input.add_race()
@@ -399,10 +403,11 @@ def server(input, output, session):
                 else:
                     title = input.county()+" County, "+state0+spgroup+": Dropoff, "+edate0
             fig = px.scatter(ff, x='index', y='dropoff',
+                            height = input.plot_height(), width=input.plot_width(),
                             size='size',
                             size_max=input.maxsize(),
                             color='party', opacity=0.5,
-                            title=title, height = 600,
+                            title=title,
                             hover_data=["precinct","county","candidate1","candidate2","party"],
                             labels={
                                 "dropoff":"Dropoff in "+input.votetype()+" "+yunits,
