@@ -302,11 +302,12 @@ def server(input, output, session):
                             size_max=input.maxsize(),
                             color='party', opacity=0.5,
                             title=title,
-                            hover_data=["precinct","county","candidate","party","votes"],
+                            hover_data=["county","precinct","candidate","party","votes"],
                             labels={
                                 "voteshare":"Party Vote Share (%)",
-                                "total":"Number of "+input.votetype()+" Votes by "+area+"<br><i>Sources: see https://econdataus.com/voting_data.htm</i>"
+                                "total":input.votetype()+" Votes by "+area
                             })
+            fig.update_layout(xaxis_title="Number of "+input.votetype()+" Votes by "+area+"<br><i>Sources: see https://econdataus.com/voting_data.htm</i>")
             return(fig)
     
     @render_widget
@@ -343,11 +344,12 @@ def server(input, output, session):
                             size_max=input.maxsize(),
                             color='party', opacity=0.5,
                             title=title,
-                            hover_data=["precinct","county","candidate","party","votes"],
+                            hover_data=["county","precinct","candidate","party","votes"],
                             labels={
                                 "voteshare":"Party Vote Share (%)",
-                                "turnout":area+" Turnout Percentage of "+input.votetype()+" Votes<br><i>Sources: see https://econdataus.com/voting_data.htm</i>"
+                                "turnout":area+" Turnout Percentage of "+input.votetype()+" Votes"
                             })
+            fig.update_layout(xaxis_title=area+" Turnout Percentage of "+input.votetype()+" Votes<br><i>Sources: see https://econdataus.com/voting_data.htm</i>")
             return(fig)
     
     @render_widget
@@ -408,12 +410,13 @@ def server(input, output, session):
                             size_max=input.maxsize(),
                             color='party', opacity=0.5,
                             title=title,
-                            hover_data=["precinct","county","candidate1","candidate2","party"],
+                            hover_data=["county","precinct","candidate1","candidate2","party"],
                             labels={
                                 "dropoff":"Dropoff in "+input.votetype()+" "+yunits,
-                                "index":area+"<br><i>Sources: see https://econdataus.com/voting_data.htm</i>"
+                                "index":area
                             }
             )
+            fig.update_layout(xaxis_title=area+"<br><i>Sources: see https://econdataus.com/voting_data.htm</i>")
             demavg = ff[ff.party == "DEM"].dropoff.mean()
             repavg = ff[ff.party == "REP"].dropoff.mean()
             demvotes1 = ff[ff.party == "DEM"].votes1.sum()
