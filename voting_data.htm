@@ -13,6 +13,12 @@
 <a href="#rockland_vs"><b>Analysis of Presidential Vote Shares in Rockland County, New York in 2024</b></a><br>
 <a href="#rockland_do"><b>Analysis of Dropoff between the Presidential and Senate races in Rockland County, New York in 2024</b></a><br>
 <a href="#rockland_source"><b>Source of the Rockland County Data and the Cause of Missing Data</b></a><br>
+<a href="#allegheny_to"><b>Analysis of Presidential Turnout in Allegheny County, Pennsylvania in 2024</b></a><br>
+<a href="#pa_to"><b>Analysis of Presidential Turnout by County in Pennsylvania in 2024</b></a><br>
+<a href="#pa_do"><b>Analysis of Presidential Dropoff by County in Pennsylvania in 2024</b></a><br>
+
+
+
 <p>
 <a name="rockland_vs"><font color="red"><h3>Analysis of Presidential Vote Shares in Rockland County, New York in 2024</h3></font>
 <p>
@@ -30,7 +36,7 @@ SMART Legislation, the action arm of nonpartisan watchdog group SMART Elections,
 <p>
 This scatter plot shows the vote shares or the main presidential candidates (Harris and Trump) by the number of total votes by precinct.  The speaker points out that most of the precinct vote shares seem to be distributed fairly normally, centered arount 50 percent, but that there are a number of Harris vote shares are very low, close to zero percent and a number of Trump vote shares are very high, near 100 percent.
 <p>
-It is possible to check these numbers in the Python Shiny application at <A HREF="https://econdata.shinyapps.io/voting_data/">https://econdata.shinyapps.io/voting_data/</A>.  Going to that URL and selecting NY for STATE should set the default selections of 2024 for YEAR, 1105_GE_vtype for ELECTION, Rockland for COUNTY, Total for VOTETYPE, and U.S. President for OFFICE.  Those selections will display the following plot:
+It is possible to check these numbers in the Python Shiny application at <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>.  Going to that URL and selecting NY for STATE should set the default selections of 2024 for YEAR, 1105_GE_vtype for ELECTION, Rockland for COUNTY, Total for VOTETYPE, and U.S. President for OFFICE.  Those selections will display the following plot:
 <p>
 <img src="http://econdataus.com/vdata_plot_pres24NY_rockland.png" alt="">
 <p>
@@ -66,12 +72,12 @@ Max Bonamente said in <A HREF="https://img1.wsimg.com/blobby/go/5275a097-faa2-4d
 This plot can likewise be reproduced in the Python Shiny app.  However, because it involves data from two races (the Presidential and Senate races), they cannot be fully defined by the STATE through the OFFICE select lists as these select lists can only specify one race at at time.  Instead, the two races can be specified as follows:
 <p>
 <ol>
-<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data/">https://econdata.shinyapps.io/voting_data/</A>
+<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>
 <li>Set STATE to NY
 <li>Verify that YEAR is set to 2024
 <li>Verify that ELECTION is set to 1105_GE_vtype
-<li>Vefiry that COUNTY is set to Rockland
-<li>Verify that TOTAL is set to Total
+<li>Verify that COUNTY is set to Rockland
+<li>Verify that VOTETYPE is set to Total
 <li>Verify that OFFICE is set to U.S. President
 <li>Press the Add button below the OFFICE select list. Within a few seconds, this should populate the RACES select list and the PRECINCT GROUP select list.
 <li>Change the OFFICE select list to U.S. Senator
@@ -82,6 +88,12 @@ This plot can likewise be reproduced in the Python Shiny app.  However, because 
 <p>This should produce the following plot:
 <p>
 <img src="http://econdataus.com/vdata_dropoff_pres_sen24NY_rockland_hav.png" alt="">
+<p>
+The solid blue and red horizontal lines in the plot above are labelled -1.0 and 35.8, respectively.  These appear to match the solid lines in the paper.  They are the average drop-offs and are calculated by taking the sums of the precinct drop-offs divided by the number of precincts, calculated separately for the Democrat (blue) and Republican (red) candidates.  However, the dashed blue and red horizontal lines are labelled -0.4 and 16.7 and are the drop-offs for the entire precinct group.  These are the drop-offs that are commonly cited.  For example, <A HREF="">an article in the Economic Times</A> states the following:
+<p><b>
+A drop-off of 1-2% is considered normal. In Rockland County, however, analysts found figures that were anything but. Harris received 9% fewer votes than Gillibrand-a negative drop-off rate-while Donald Trump received 23% more votes than the Republican Senate candidate.
+</b><p>
+If you switch PRECINCT GROUP to "(all)" and expand the graph on the area containing the horizontal lines, you'll see that the dashed lines are at -8.4% for Harris and 22.7 percent for Trump, pretty much equal to the numbers in the excerpt above.
 <p>
 A careful comparison of this plot with the one from the paper above shows that all of the location of all points appear to be identical except for precinct 27 which is missing in the above plot.  Clicking on the Text tab and "NY_241105_U.S. President" in the RACES select list and then pressing the votes title twice will display an up arrow next to the votes title indicating that the table is now sorted from the lowest to the highest number of votes as seen below:
 <p>
@@ -202,7 +214,111 @@ This shows a total voteCount of 33 for Haverstraw 27 but the voteCounts for "Ele
 <img src="http://econdataus.com/vdata_enr_pres24NY_rockland_hav27_votemethod.png" alt="">
 <p>
 As can be seen, Rockland County's ENR page shows Total Votes for precinct Haverstraw 27 but does not show the vote countes for Election Day, Early Voting, and Absentee Mail.  This program takes it's input from CSV files in which the columns are county, precinct, office, district, party, candidate, votes, and votetype and each row contains the number of votes for each case of the other columns.  The current program that converts the original JSON file to this type of CSV file only grabs the data for the votetypes of Election Day, Early Voting, and Absentee Mail and calculates the total votes by summing the votes for these 3 votetypes.  I plan to change this program to grab the total votes shown above.  This should fix this particular problem of missing data in very small precincts.
- <hr>
+<p>
+<a name="allegheny_to"><font color="red"><h3>Analysis of Presidential Turnout in Allegheny County, Pennsylvania in 2024</h3></font>
+<p>
+The <A HREF="https://electiontruthalliance.org/">Election Truth Alliance</A> has a data dashboard that can be used to explore various sets of U.S. election data.  For example, candidate vote share versus voter turnout percentage of Allegheny County, Pennsylvania in the 2024 presidential election can be viewed via the following steps:
+<p>
+<ol>
+<li>Go to <A HREF="https://data.electiontruthalliance.org/">https://data.electiontruthalliance.org/</A>
+<li>Set State to Pennsylvania
+<li>Set County to Allegheny
+<li>Set Year to 2024
+<li>Set Election to "Presidential - Election Day Votes"
+</ol>
+This should display the following plot:
+<p>
+<img src="http://econdataus.com/eta_turnout_pres24PA_allegheny_eday.png" alt="">
+<p>
+This plot can be reproduced in the Python Shiny app via the following steps:
+<p>
+<ol>
+<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>
+<li>Set STATE to PA
+<li>Verify that YEAR is set to 2024
+<li>Verify that ELECTION is set to 1105_GE_Clarity
+<li>Verify that COUNTY is set to Allegheny
+<li>Verify that VOTETYPE is set to election_day
+<li>Verify that OFFICE is set to US President
+<li>Click the Turnout tab
+</ol>
+This should display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24PA_allegheny_eday.png" alt="">
+<p>
+As can be seen, this appears identical to the plot created by the ETA dashboard with nearly all precincts having a turnout under 70 percent.  However, this only includes the election day votes.  Changing VOTETYPE to total displays the following plot:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24PA_allegheny_total.png" alt="">
+<p>
+As can be seen, the turnout in many precincts is now up to 90 percent.  This same basic data can be viewed by changing ELECTION to 1105_GE_Bulk and setting COUNTY to Allegheny.  This displays the following plot:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24PA_allegheny_total_bulk.png" alt="">
+<p>
+As can be seen, this plot looks nearly identical.  However, it can be seen that there is now a precinct with a turnout over 100.  Hovering over the blue or red dot shows this to be precinct 11760.
+<p>
+The data for the first plot was obtained by going to the <A HREF="https://results.enr.clarityelections.com/PA/Allegheny/122424/web.345435/#/summary">Clarity Election Night Reporting page</A> and clicking on the <A HREF="https://results.enr.clarityelections.com//PA/Allegheny/122424/355869/reports/detailxls.zip">Detail XLS link</A> in the right panel.  The data for the second plot was obtained by going to a <A HREF="https://www.pa.gov/agencies/dos/resources/voting-and-elections-resources/voting-and-election-statistics/election-data.html#accordion-9f6b1feab5-item-8ad90604b2">Historical Elections Data</A> on the Pennsylvania government site and clicking on the <A HREF="https://www.pa.gov/content/dam/copapwp-pagov/en/dos/resources/voting-and-elections/bulk-data/2024-general-election/er/erstat_2024_g_268768_20250129.txt">Download the 2024 General Voter Election Returns Precinct Data</A> link.
+<p>
+<a name="pa_to"><font color="red"><h3>Analysis of Presidential Turnout by County in Pennsylvania in 2024</h3></font>
+<p>
+Changing COUNTY from Allegheny to "(all)" in the last plot of the prior section will display turnout information for all of Pennsylvania.  To recount, following are all of the steps:
+<p>
+<ol>
+<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>
+<li>Set STATE to PA
+<li>Verify that YEAR is set to 2024
+<li>Set ELECTION to 1105_GE_Bulk
+<li>Verify that COUNTY is set to (all)
+<li>Verify that VOTETYPE is set to total
+<li>Verify that OFFICE is set to US President
+<li>Check the "Plot by County" checkbox.
+<li>Click the Turnout tab
+</ol>
+This should display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24PA_all_total_bulk.png" alt="">
+<p>
+As can be seen, there are now a number of precincts with turnouts above 100 percent.  The blue and red points for precinct 11760 in the last plot of the prior section can be seen just over 100 percent turnout at voteshares of slightly over 80 percent and just under 20 percent.  The hover popup shows that precinct 865 of Northumberland County shows a turnout of over 1,265 percent!  In fact, the precincts showing over 100 percent turnout are likely special precincts that accept ballots from voters who did not register in that precinct.  Hence, it may be best to look at the turnout by county.  Checking the "Plot by County" checkbox will diplay the following plot:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24PA_bycounty_total_bulk.png" alt="">
+<p>
+As can be seen, the county turnout percentages appear to be between 64 percent and 85 percent.  As visible from the hover popup, Philadelphia County has the lowest turnout by far of about 64.35 percent.
+<p>
+One notable thing about the Bulk Data on which this plot is based is that it contains registration data by precinct and party.  The Clarity data specified by the ELECTION setting of 1105_GE_Clarity has registration data but only by precinct, not by party.  The turnout by party can be viewed by checking the "Turnout by Party" checkbox.  This causes the following plot to be displayed:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24PA_bycounty_byparty_total_bulk.png" alt="">
+<p>
+This plot calculates the turnout under the assumption that all registered voters vote for the party for which they registered, at least on average.  This, of course, may vary widely from the actual case.  Still, it may be worth looking further at cases where the turnout by party is exceptionally low or high.  In this plot, the Democrat and Republican turnouts for Philadelphia County were about 70 and 106 percent, respectively.  This does seem odd since the overall turnout was about 64 percent.  This could have been effected due to an exceptionally low turnout as measured for third-party candidates.  Still, it would be worth checking these numbers against the original election data to make sure that they are correct. 
+<p>
+<a name="pa_do"><font color="red"><h3>Analysis of Presidential Dropoff by County in Pennsylvania in 2024</h3></font>
+<p>
+The following steps can be followed to look at the dropoff for all of Pennsylvania:
+<p>
+<ol>
+<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>
+<li>Set STATE to PA
+<li>Verify that YEAR is set to 2024
+<li>Set ELECTION to 1105_GE_Bulk
+<li>Verify that COUNTY is set to (all)
+<li>Verify that VOTETYPE is set to total
+<li>Verify that OFFICE is set to US President
+<li>Press the Add button below the OFFICE select list. Within a few seconds, this should populate the RACES select list and the PRECINCT GROUP select list.
+<li>Change the OFFICE select list to US Senator
+<lI>Press the Add button. This should add the Senator race below the Presidential race in the RACES select list.
+<li>Check the "Plot by County" checkbox.
+<li>Click the Dropoff tab
+</ol>
+This should display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_dropoff_pres_sen24PA_bycounty_total.png" alt="">
+<p>
+The counties are numbered in alphabetical order such that Allegheny County is 2 and Philadelphia County is 51.  The numbers above the solid horizontal lines indicate that the average Republican dropoff was 2149.1 votes per county and the average Democrat dropoff was 577.9 votes per county.  Multiplied by 67, the numbers of counties in Pennsylvania, gives total Republican and Democrat dropoffs of about 143,990 and 38,719, respectively.
+<p>
+Checking the "Plot percent" checkbox at this point will display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_dropoff_pres_sen24PA_bycounty_percent_total.png" alt="">
+<p>
+ As seen, the dashed lines are numbered 1.1 percent for Democrats and 4.1 percent for Republicans.  This pretty much matches the 1.13 and 4.07 percent dropoffs listed for Pennsylvania on the <A HREF="https://smartelections.us/dropoff#f49a73cc-9e88-4c82-a112-b5a5525d56bc">Smart Elections web site.
+<hr>
 If anyone should run into any issues or have any suggestions for additional features, feel free to let me know via the Contact Form in the left margin of <A HREF="http://usbudget.blogspot.com/">this page</A>.
 <hr>
 <A HREF="https://econdataus.com/election24.htm">2024 U.S. Election</A><br>

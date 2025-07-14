@@ -377,9 +377,8 @@ def server(input, output, session):
                 ff = ff[ff['precinct'].str.startswith(pgroup)]
             ff = ff[ff['votetype'] == input.votetype()]
             if input.by_county():
-                tt = dd.sort_values(by=['county'], ascending=True)
-                tt.insert(0,'ind', range(1, (len(tt)+1)))
-                xx = dict(zip(tt.county, tt.ind))
+                cc = sorted(list(set(dd.county)))
+                xx = dict(zip(cc, range(1, (len(cc)+1))))
                 ff['index'] = ff['county'].map(xx)
             else:
                 xx = get_precinct_indices(ff)
