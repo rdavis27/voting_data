@@ -13,12 +13,14 @@
 <a href="#rockland_vs"><b>Analysis of Presidential Vote Shares in Rockland County, New York in 2024</b></a><br>
 <a href="#rockland_do"><b>Analysis of Dropoff between the Presidential and Senate races in Rockland County, New York in 2024</b></a><br>
 <a href="#rockland_source"><b>Source of the Rockland County Data and the Cause of Missing Data</b></a><br>
+<br>
 <a href="#allegheny_to"><b>Analysis of Presidential Turnout in Allegheny County, Pennsylvania in 2024</b></a><br>
 <a href="#pa_to"><b>Analysis of Presidential Turnout by County in Pennsylvania in 2024</b></a><br>
 <a href="#pa_do"><b>Analysis of Presidential Dropoff by County in Pennsylvania in 2024</b></a><br>
-
-
-
+<br>
+<a href="#tx_vs"><b>Analysis of Presidential Vote Shares in Texas in 2024</b></a><br>
+<a href="#tx_to"><b>Analysis of Presidential Turnout in Texas in 2024</b></a><br>
+<a href="#tx_do"><b>Analysis of Presidential Dropoff in Texas in 2024</b></a><br>
 <p>
 <a name="rockland_vs"><font color="red"><h3>Analysis of Presidential Vote Shares in Rockland County, New York in 2024</h3></font>
 <p>
@@ -54,6 +56,8 @@ Scrolling past the missing values will display the following:
 <img src="http://econdataus.com/vdata_text_pres24NY_rockland_low_vs.png" alt="">
 <p>
 As can be seen, the lowest 14 vote shares are all for Kamala Harris and occurred in Ramapo precincts.  Three had zero votes for Harris and another 10 were below 1 percent.
+<p>
+The code for the Python Shiny application at <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A> can be found at <A HREF="https://github.com/rdavis27/voting_data">https://github.com/rdavis27/voting_data</A>.  Using this code, the application can be run locally as well.
 <p>
 <a name="rockland_do"><font color="red"><h3>Analysis of Dropoff between the Presidential and Senate races in Rockland County, New York in 2024</h3></font>
 <p>
@@ -270,7 +274,6 @@ Changing COUNTY from Allegheny to "(all)" in the last plot of the prior section 
 <li>Verify that COUNTY is set to (all)
 <li>Verify that VOTETYPE is set to total
 <li>Verify that OFFICE is set to US President
-<li>Check the "Plot by County" checkbox.
 <li>Click the Turnout tab
 </ol>
 This should display the following plot:
@@ -317,7 +320,116 @@ Checking the "Plot percent" checkbox at this point will display the following pl
 <p>
 <img src="http://econdataus.com/vdata_dropoff_pres_sen24PA_bycounty_percent_total.png" alt="">
 <p>
- As seen, the dashed lines are numbered 1.1 percent for Democrats and 4.1 percent for Republicans.  This pretty much matches the 1.13 and 4.07 percent dropoffs listed for Pennsylvania on the <A HREF="https://smartelections.us/dropoff#f49a73cc-9e88-4c82-a112-b5a5525d56bc">Smart Elections web site.
+ As seen, the dashed lines are numbered 1.1 percent for Democrats and 4.1 percent for Republicans.  This pretty much matches the 1.13 and 4.07 percent dropoffs listed for Pennsylvania on the <A HREF="https://smartelections.us/dropoff#f49a73cc-9e88-4c82-a112-b5a5525d56bc">Smart Elections web site</A>.
+<p>
+<a name="tx_vs"><font color="red"><h3>Analysis of Presidential Vote Shares in Texas in 2024</h3></font>
+<p>
+Election data from the 2024 U.S. presidential election in Texas can be viewed via the following steps:
+<p>
+<ol>
+<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>
+<li>Set STATE to TX
+<li>Verify that YEAR is set to 2024
+<li>Set ELECTION to 1105_CDP
+<li>Verify that COUNTY is set to (all)
+<li>Verify that VOTETYPE is set to total
+<li>Verify that OFFICE is set to President_CDP
+<li>Hover the mouse just to the right of the point closest to 6k on the x-axis and 80 percent on the y-axis.
+</ol>
+This should display the following plotx:
+<p>
+<img src="http://econdataus.com/vdata_votes_pres24TX_cdp_all.png" alt="">
+<p>
+<p>
+In the labels and the steps above, CDP refers to the Capitol Data Portal, the source of the data, at <A HREF="https://data.capitol.texas.gov/topic/elections">https://data.capitol.texas.gov/topic/elections</A>.  The About tab at that page states the following:
+<p><b>
+The data from each election in this directory are reported by 2024 general election VTDs (voter tabulation districts). VTDs are geographic approximations of voting precincts and are used to provide links among the census geography used to build districts, census population data, and election data. The Comprehensive Election Datasets resource provides a compressed file with all available election data reported by the 2024 general election VTDs, as well as compressed files with all available data for each earlier vintage of VTDs from this decade.
+</b><p><b>
+These datasets are developed and complied by the Research Division of the Texas Legislative Council for redistricting purposes; they are derived from election returns provided by the counties and the office of the secretary of state. There may be small differences between the data presented here and official election results; official results should be obtained from the Texas Secretary of State and county election officials.
+</b><p>
+Hence, there may be small differences between this data and official election results.  However, it is difficult to compile data for all of the 254 counties in Texas and this data serves as cose estimate.
+<p>
+The above plot shows the Democrat and Republican votes shares of the precinct vote totals in all Texas precincts in the 2024 presidential election.  Hovering the mouse just to the right of the point shown above shows that it is for a Precinct 1149 in Fort Bend County, Texas.  In fact, hovering over the other points along that same vertical line (just over 6,000 votes) or to the right shows that they are all precincts in Fort Bend County except for the red point just below it and its corresponding blue point which refer to Precinct 215A in Hunt County, Texas.  An article titled <A HREF="https://fbindependent.com/fort-bend-county-commissioners-have-violated-texas-election-code-in-redistr-p16275-1.htm">"Fort Bend County Commissioners have violated Texas Election Code in redistricting voting precincts"</A> states the following:
+<p><b>
+According to the Texas election code, voting precincts in a county with a population over 100,000 must contain no less than 100 registered voters and no more than 5,000 registered voters.
+</b><p><b>
+When reviewing the Fort Bend County Registered Voter data procured from the FBC Election Office on November 4, 2024 it was found that out of 174 voting precincts there are a total of 37 precincts that do not meet compliance (nearly 21% of the voting precincts), Morgan wrote in a letter to the county judge and four commissioners.
+</b><p><b>
+There are 33 precincts over the 5,000 threshold with most having over 6,000 registered voters. Furthermore, there are four egregious precincts that have less than three registered voters and several extremely overpopulated precincts with the most egregious being 18,579 registered voters, 14,920 registered voters and 12,550 registered voters.
+</b>
+<p>
+In any event, checking the "Plot by County" checkbox and hovering the mouse just to the left of the rightmost blue point should display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_votes_pres24TX_cdp_counties.png" alt="">
+<p>
+As can be seen, Harris County had just over 1.55 million votes and just over 52 percent of those were for the Democrat, Kamala Harris.
+<p>
+<a name="tx_to"><font color="red"><h3>Analysis of Presidential Turnout in Texas in 2024</h3></font>
+<p>
+Unchecking the "Plot by County" checkbox and selecting the Turnout tab should now display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24TX_cdp_all.png" alt="">
+<p>
+As can be seen, Trump (red) did better in precincts with high turnout and Harris (blue) did better in precincts with lower turnouts.  All of the blue points can be seen by clicking on the red dot labelled REP in the upper right corner:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24TX_cdp_all_dem.png" alt="">
+<p>
+Clicking the red dot labelled REP again, checking the "Plot by County" checkbox, and increasing "Max Dot Size" to 35 should now display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24TX_cdp_counties_maxdot35.png" alt="">
+<p>
+Increasing "Max Dot Size" to 35 made more of the counties visible.  As can be seen. the large dots of the large counties look to be somewhat evenly distributed between Democrats and Republicans but the small counties favor Republicans with a voteshare that looks to average about 80 percent versus 20 percent.  In this plot, turnouts of a few counties are visible around 75 percent and one county is barely visible at about 77 percent.
+<p>
+Setting "Max Dot Size" back to 15 and unchecking "Dot Size by Total" should display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_turnout_pres24TX_cdp_counties_onesize15.png" alt="">
+<p>
+This makes all counties visible and they have turnouts as high as about 82 percent.  That county on the far right is King County with 129 Trump votes, 6 Harris votes, and a turnout of 81.82 percent.
+<p>
+<a name="tx_do"><font color="red"><h3>Analysis of Presidential Dropoff in Texas in 2024</h3></font>
+<p>
+The dropoff between the Presidential and Senate candidates in Texas and be seen via the following steps:
+<ol>
+<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>
+<li>Set STATE to TX
+<li>Verify that YEAR is set to 2024
+<li>Set ELECTION to 1105_CDP
+<li>Verify that COUNTY is set to (all)
+<li>Verify that VOTETYPE is set to total
+<li>Verify that OFFICE is set to President_CDP
+<li>Press the Add button below the OFFICE select list. Within a few seconds, this should populate the RACES select list.
+<li>Change the OFFICE select list to US Senator_CDP
+<lI>Press the Add button. This should add the Senator race below the Presidential race in the RACES select list.
+<li>Check the "Plot by County" checkbox.
+<li>Click the Dropoff tab
+</ol>
+This should display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_dropoff_pres_sen24TX_cdp_all_hover.png" alt="">
+<p>
+As can be seen, the great majority if the red points and blue points are above and below the x-axis, respectively.  The few that break this pattern can be seen more clearly by clicking the blue dot labelled DEM or the red dot labelled REP in the upper right corner.  Hence, the great majority of precincts had more votes for Trump than for Ted Cruz, the Republican candidate for Senate.  Conversely, the great majority of precincts also had FEWER votes for Harris than for Collin Allred, the Democrat candidate for Senate.
+<p>
+Checking the "Plot by County" checkbox should display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_dropoff_pres_sen24TX_cdp_counties.png" alt="">
+<p>
+This shows the dropoff from the Presidential to the Senate candidate by county.  As can be seen, Harris County had the biggest negative dropoff of over 33,000 votes (from Harris to Allred) amoung large counties.  It also had the biggest increase of over 56 thousand votes (from Trump to Cruz) amoung large counties.  The fact that Harris County should have the biggest positive dropoff is not too surprising since it does have more votes than any other county.  But since dropoffs are usually positive from the President to any down-ballot race, the negative dropoff is somewhat surprising.  In any event, checking the "Plot percent" checkbox should display the following plot:
+<p>
+<img src="http://econdataus.com/vdata_dropoff_pres_sen24TX_cdp_counties_percent.png" alt="">
+<p>
+The plot shows that the average dropoff of the Republican and Democrat candidates was positive 5.3% (Trump to Cruz) and negative 7.1% (Harris to Allred), respectively.  These are calculated by taking the sums of the precinct drop-offs divided by the number of precincts, calculated separately for the Democrat (blue) and Republican (red) candidates.  In contrast, the dashed red and blue horizontal lines are labelled positive 6.3% and negative 4.1% and are the drop-offs for the entire state.
+<p>
+By moving the mouse cursor to just above the 20 precent line on the y-axis, pressing and holding the mouse button, moving the cursor to just below the -20 percent line on the y-axis, and releasing the mouse button, you can expand the y-axis to go from -20 to 20 percent.  This will result in a plot that looks close to the one below:
+<p>
+<img src="http://econdataus.com/vdata_dropoff_pres_sen24TX_cdp_counties_percent_20p20.png" alt="">
+<p>
+Now the numbers on the horizontal lines are easier to read and the position of the points can be seen in more detail.
+<p>
+Highlighting TX_241105_President_CDP in the RACES select list, selecting the Text tab, and scrolling to the bottom of the table should result in the following view:
+<p>
+<img src="http://econdataus.com/vdata_text_pres24TX_total_dem_rep.png" alt="">
+<p>
+The number 11,228,537 in the total column shows the sum for the Democrat and Republican candidates in the 2024 Presidential race in Texas.  The reason that it includes just the Democrat and Republican candidates is that the "DEM/REP only" checkbox is checked.  If it were unchecked, the total would be 11,404,528.  In any case, the 11,228,537 is just 310 less than the 11,228,847 total (6,393,597 Trump plus 4.835,250 Harris) shown on <A HREF="https://en.wikipedia.org/wiki/2024_United_States_presidential_election_in_Texas">Wikipedia</A> and other sources.  Hence, the Capitol Data Portal numbers appear to be a very close estimate of the actual results, at least judging from the total.
 <hr>
 If anyone should run into any issues or have any suggestions for additional features, feel free to let me know via the Contact Form in the left margin of <A HREF="http://usbudget.blogspot.com/">this page</A>.
 <hr>

@@ -77,6 +77,7 @@ app_ui = ui.page_sidebar(
             "PRECINCT GROUP",
             choices=[]
         ),
+        ui.input_checkbox("setpgroup","SET Precint Group", False),
         ui.input_checkbox("demrep","DEM/REP only", True),
         ui.input_checkbox("demrep_comb","DEM/REP combine", True),
         ui.input_checkbox("calctotal","Calculate Total", True),
@@ -84,10 +85,15 @@ app_ui = ui.page_sidebar(
         ui.input_checkbox("to_party","Turnout by Party", False),
         ui.input_checkbox("by_county","Plot by County", False),
         ui.input_checkbox("plot_percent","Plot percent", False),
-        ui.input_numeric("maxsize","Max Dot Size",value=15,min=1),
-        ui.input_numeric("decimals","Decimal Places",value=1,min=0),
-        ui.input_numeric("plot_height","Plot Height",value=600,min=0),
-        ui.input_numeric("plot_width" ,"Plot Width" ,value=1000,min=0),
+         ui.input_numeric("minvotes","Min Votes Displayed",value=10,min=0),
+        ui.layout_columns(
+            ui.input_numeric("maxdotsize","Max Dot Size",value=15,min=1),
+            ui.input_numeric("decimals","Decimal Places",value=1,min=0)
+        ),
+        ui.layout_columns(
+            ui.input_numeric("plot_height","Plot Height",value=600,min=0),
+            ui.input_numeric("plot_width" ,"Plot Width" ,value=1000,min=0)
+        ),
         width=350
     ),
     ui.navset_tab(
@@ -178,7 +184,6 @@ def server(input, output, session):
                 )
                 if len(rlist) == 1:
                     set_pgroups(dd.precinct)
-
     def get_precinct_indices(ff):
         print("START get_precinct_indices(ff)") #DEBUG_PRINT
         pp = list(set(ff.precinct))
@@ -254,7 +259,7 @@ def server(input, output, session):
     def set_pgroups(pp):
         print("START set_pgroups(pp)") #DEBUG_PRINT
         lgroups = ["(all)"]
-        if (pp.dtype != "int64"):
+        if (pp.dtype != "int64" and input.setpgroup()):
             for i in range(0,len(list(pp))-1,1):
                 match = re.match(r"([a-zA-Z ]+)(\d+)([a-zA-Z0-9\(\) ]*)", str(list(pp)[i]))
                 if match:
@@ -284,7 +289,7 @@ def server(input, output, session):
             if input.varysize():
                 ee['size'] = ee['total']
             else:
-                ee['size'] = 1
+                ee['size'] = input.minvotes()
             if input.by_county():
                 area = "County"
             else:
@@ -295,11 +300,12 @@ def server(input, output, session):
                     title = input.county()+" County, "+state0+": "+list(ee.office)[0]+" Vote Share by "+area+" Vote Total, "+edate0
                 else:
                     title = input.county()+" County, "+state0+": Candidate Vote Share by "+area+" Vote Total, "+edate0
+            ee = ee[ee['size'] >= input.minvotes()]
             print("BEFORE scatter, len(ee)="+str(len(ee))) #DEBUG_TMP
             fig = px.scatter(ee, x='total', y='voteshare',
                             height = input.plot_height(), width=input.plot_width(),
                             size='size',
-                            size_max=input.maxsize(),
+                            size_max=input.maxdotsize(),
                             color='party', opacity=0.5,
                             title=title,
                             hover_data=["county","precinct","candidate","party","votes"],
@@ -323,7 +329,7 @@ def server(input, output, session):
             if input.varysize():
                 ee['size'] = ee['total']
             else:
-                ee['size'] = 1
+                ee['size'] = input.minvotes()
             if input.to_party():
                 ee = ee.assign(turnout = 100 * ee['votes'] / ee['registered'])
             else:
@@ -338,10 +344,11 @@ def server(input, output, session):
                     title = input.county()+" County, "+state0+": "+list(ee.office)[0]+" Vote Share by "+area+" Turnout Percentage, "+edate0
                 else:
                     title = input.county()+" County, "+state0+": Candidate Vote Share by "+area+" Turnout Percentage, "+edate0
+            ee = ee[ee['size'] >= input.minvotes()]
             fig = px.scatter(ee, x='turnout', y='voteshare',
                             height = input.plot_height(), width=input.plot_width(),
                             size='size',
-                            size_max=input.maxsize(),
+                            size_max=input.maxdotsize(),
                             color='party', opacity=0.5,
                             title=title,
                             hover_data=["county","precinct","candidate","party","votes"],
@@ -387,7 +394,7 @@ def server(input, output, session):
             if input.varysize():
                 ff['size'] = ff['total1']
             else:
-                ff['size'] = 1
+                ff['size'] = input.minvotes()
             if input.by_county():
                 area = "County"
             else:
@@ -403,10 +410,11 @@ def server(input, output, session):
                     title = input.county()+" County, "+state0+spgroup+": Dropoff from "+str(ff.office1[ii])+" to "+str(ff.office2[ii])+", "+edate0
                 else:
                     title = input.county()+" County, "+state0+spgroup+": Dropoff, "+edate0
+            ff = ff[ff['size'] >= input.minvotes()]
             fig = px.scatter(ff, x='index', y='dropoff',
                             height = input.plot_height(), width=input.plot_width(),
                             size='size',
-                            size_max=input.maxsize(),
+                            size_max=input.maxdotsize(),
                             color='party', opacity=0.5,
                             title=title,
                             hover_data=["county","precinct","candidate1","candidate2","party"],
@@ -444,11 +452,17 @@ def server(input, output, session):
             ee = ee[ee['precinct'].str.startswith(pgroup)]
         ee = ee[ee['votetype'] == input.votetype()]
         ee['voteshare'] = ee['voteshare'].round(input.decimals())
+        ee = ee.assign(turnout = 100 * ee['total'] / ee['registered'])
+        #ee['turnout'] = 100 * ee['total'] / ee['registered']
+        ee['turnout'] = ee['turnout'].round(input.decimals())
         tt = ee.groupby(['county','office','district','party','candidate','votetype'], as_index=False)[['votes']].agg('sum')
         tt['precinct'] = "(all)"
         tt['total'] = sum(tt['votes'])
         tt = tt.assign(voteshare = 100 * tt['votes'] / tt['total'])
         tt['voteshare'] = tt['voteshare'].round(input.decimals())
+        #tt = tt.assign(turnout = 100 * tt['total'] / tt['registered'])
+        #tt['turnout'] = 100 * tt['total'] / tt['registered']
+        #tt['turnout'] = tt['turnout'].round(input.decimals())
         ee = pd.concat([ee, tt], ignore_index=True)
         return render.DataGrid(ee, selection_mode="rows")
     
