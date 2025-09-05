@@ -1,5 +1,19 @@
 <html>
 <head>
+<style>
+  .half {
+    width: 50%;           /* 50% of the container width */
+  }
+  .halfmax300 {
+    width: 50%;           /* 50% of the container width */
+    max-width: 300px;     /* optional: cap the max size */
+  }
+  .container {
+    display: flex;        /* put images side by side */
+    justify-content: center;
+    gap: 10px;            /* space between images */
+  }
+</style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link href="css/main.css" rel="stylesheet" type="text/css" />
 
@@ -21,6 +35,9 @@
 <a href="#tx_vs"><b>Analysis of Presidential Vote Shares in Texas in 2024</b></a><br>
 <a href="#tx_to"><b>Analysis of Presidential Turnout in Texas in 2024</b></a><br>
 <a href="#tx_do"><b>Analysis of Presidential Dropoff in Texas in 2024</b></a><br>
+<p>
+<a href="#nc_do"><b>Analysis of Presidential Dropoff in North Carolina in 2024</b></a><br>
+<a href="#nc_tohist"><b>Analysis using Voter Turnout Histograms in North Carolina in 2024</b></a><br>
 <p>
 <a name="rockland_vs"><font color="red"><h3>Analysis of Presidential Vote Shares in Rockland County, New York in 2024</h3></font>
 <p>
@@ -388,7 +405,7 @@ This makes all counties visible and they have turnouts as high as about 82 perce
 <p>
 <a name="tx_do"><font color="red"><h3>Analysis of Presidential Dropoff in Texas in 2024</h3></font>
 <p>
-The dropoff between the Presidential and Senate candidates in Texas and be seen via the following steps:
+The dropoff between the Presidential and Senate candidates in Texas can be seen via the following steps:
 <ol>
 <li>Go to <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>
 <li>Set STATE to TX
@@ -430,6 +447,140 @@ Highlighting TX_241105_President_CDP in the RACES select list, selecting the Tex
 <img src="http://econdataus.com/vdata_text_pres24TX_total_dem_rep.png" alt="">
 <p>
 The number 11,228,537 in the total column shows the sum for the Democrat and Republican candidates in the 2024 Presidential race in Texas.  The reason that it includes just the Democrat and Republican candidates is that the "DEM/REP only" checkbox is checked.  If it were unchecked, the total would be 11,404,528.  In any case, the 11,228,537 is just 310 less than the 11,228,847 total (6,393,597 Trump plus 4.835,250 Harris) shown on <A HREF="https://en.wikipedia.org/wiki/2024_United_States_presidential_election_in_Texas">Wikipedia</A> and other sources.  Hence, the Capitol Data Portal numbers appear to be a very close estimate of the actual results, at least judging from the total.
+<p>
+Note: Additional analysis of the 2024 General Election in Texas can be found at <A HREF="https://econdataus.com/voting_oe24.htm#pres24tx">https://econdataus.com/voting_oe24.htm#pres24tx</A>. It uses another Shiny program but is written in R.
+<p>
+<a name="nc_do"><font color="red"><h3>Analysis of Presidential Dropoff in North Carolina in 2024</h3></font>
+<p>
+The Election Truth Alliance (ETA) posted the following two plots on an analysis titled <A HREF="https://electiontruthalliance.org/analysis/north-carolina-shortform/">"North Carolina | 2024 U.S. Election Analysis | Shortform"</A>:
+<p>
+<img src="https://electiontruthalliance.org/wp-content/uploads/2025/08/harris-and-trump-down-ballot-average-early-voting-1024x363.png" alt="">
+<p>
+<img src="https://electiontruthalliance.org/wp-content/uploads/2025/08/harris-and-trump-down-ballot-average-election-day-1024x374.png" alt="">
+<p>
+Regarding these plots, the analysis states the following:
+<p><b>
+In many cases in North Carolina, Democratic down-ballot candidates received more votes than the Democratic candidate for President – often with an unusual degree of consistency across all counties. This is the case for both Early Voting (most common in North Carolina) and Election Day votes.
+</b><p><b>
+Both charts show a higher degree of consistency and uniformity than we would expect; however, Election Day down-ballot difference is particularly pronounced.
+</b><p>
+The dropoff between the Presidential and Governor candidates in North Carolins in 2024 can be seen via the following steps:
+<ol>
+<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>
+<li>Set STATE to NC
+<li>Verify that YEAR is set to 2024
+<li>Verify that ELECTION to 1105_GE
+<li>Verify that COUNTY is set to (all)
+<li>Verify that VOTETYPE is set to Early
+<li>Verify that OFFICE is set to US PRESIDENT
+<li>Press the Add button below the OFFICE select list. Within a few seconds, this should populate the RACES select list.
+<li>Change the OFFICE select list to NC GOVERNOR. As a shortcut, you can type 'NC G' (without the quotes) into the OFFICE textbox and hit the enter key when 'NC GOVERNOR' appears.
+<lI>Press the Add button. This should add the NC GOVERNOR race below the US PRESIDENT race in the RACES select list.
+<li>Check the "Plot by County" checkbox.
+<li>Check the "Plot percent" checkbox.
+<li>Click the Dropoff tab
+</ol>
+This should display the following plot:
+<p>
+<img src="vdata_dropoff_pres_gov24NC_bycounty_percent_early.png" alt="">
+<p>
+Changing VOTETYPE to ElectionDay will show the same type plot for Election Day Voting.  Below are the plots for the dropoff from President to Governor for Early and Election Day voting:
+<p>
+<div class="container">
+  <img src="vdata_dropoff_pres_gov24NC_bycounty_percent_early_plot.png" class="half" alt="">
+  <img src="vdata_dropoff_pres_gov24NC_bycounty_percent_eday_plot.png" class="half" alt="">
+</div>
+In its longer anaysis titled <A HREF="https://electiontruthalliance.org/analysis/north-carolina/">"North Carolina | 2024 U.S. Election Analysis | Longform"</A>, the ETA stated the following about the Governor's race:
+<p><b>
+While down-ballot difference can be measured for any candidate, the ETA prefers when possible to measure down-ballot difference in relation to the next statewide down-ballot candidate – for instance, the candidate for Senator or Governor.
+</b><p><b>
+In North Carolina, however:
+</b><p><b><ul>
+<li>there was no Senator race in 2024; and,
+<li>the unique circumstances surrounding the Republican candidate for Governor would make for a less representative comparison.
+</ul></b><p>
+For the above reasons, the analysis looks at the dropoff between the Presidential race and the average of the next 6 down-ballots races after Governor.  In order, those races are Lieutenant Governor, Secretary of State, Auditor, Treasurer, Attorney General, and Superintendent of Public Instruction.  <A HREF="https://econdata.shinyapps.io/voting_data1/">This application</A> does not currently compute such averages but following are the plots for each of those 6 down-ballot races, both for Early and Election Day voting:
+<p>
+<div class="container">
+  <img src="vdata_dropoff_pres_ltgov24NC_bycounty_percent_early_plot.png" class="half" alt="">
+  <img src="vdata_dropoff_pres_ltgov24NC_bycounty_percent_eday_plot.png" class="half" alt="">
+</div>
+<div class="container">
+  <img src="vdata_dropoff_pres_sos24NC_bycounty_percent_early_plot.png" class="half" alt="">
+  <img src="vdata_dropoff_pres_sos24NC_bycounty_percent_eday_plot.png" class="half" alt="">
+</div>
+<div class="container">
+  <img src="vdata_dropoff_pres_aud24NC_bycounty_percent_early_plot.png" class="half" alt="">
+  <img src="vdata_dropoff_pres_aud24NC_bycounty_percent_eday_plot.png" class="half" alt="">
+</div>
+<div class="container">
+  <img src="vdata_dropoff_pres_treas24NC_bycounty_percent_early_plot.png" class="half" alt="">
+  <img src="vdata_dropoff_pres_treas24NC_bycounty_percent_eday_plot.png" class="half" alt="">
+</div>
+<div class="container">
+  <img src="vdata_dropoff_pres_ag24NC_bycounty_percent_early_plot.png" class="half" alt="">
+  <img src="vdata_dropoff_pres_ag24NC_bycounty_percent_eday_plot.png" class="half" alt="">
+</div>
+<div class="container">
+  <img src="vdata_dropoff_pres_sup24NC_bycounty_percent_early_plot.png" class="half" alt="">
+  <img src="vdata_dropoff_pres_sup24NC_bycounty_percent_eday_plot.png" class="half" alt="">
+</div>
+As can be seen, these 6 races generally followed the pattern where there was a large positive dropoff from the Republican Presidential candidate (Trump) to the down-ballot candidate but a negative dropoff from the Democrat Presidential candidate (Harris) to the down-ballot candidate.  The exceptions were the Auditor race and the Treasurer race.  The Auditor race was won by the Republican <A HREF="https://www.carolinajournal.com/boliek-flips-nc-auditors-seat-for-republicans/">Dave Boliek</A> and the dropoff from the Presidential race to the Auditor race was positive for both candidates.  The Treasurer race was won by the Republican <A HREF="https://www.wcnc.com/article/news/politics/elections/north-carolina-state-treasurer-election-candidates-wesley-harris-brad-briner/275-b22d39c0-760a-49dd-93a2-c0acf4056203">Brad Briner</A> and the dropoffs were somewhat reversed from the pattern seen with most other races with a large negative dropoff for the Republican candidate but a small positive dropoff for the Democrat candidate.  In any case, even after excluding the Governor's race, the first 3 and the 6th down-ballot races did follow the same dropoff pattern as calculated by the ETA analysis for the average of all 6 races.
+<p>
+<a name="nc_tohist"><font color="red"><h3>Analysis using Voter Turnout Histograms in North Carolina in 2024</h3></font>
+<p>
+Voter turnout in the 2024 Presidential race in North Carolina can be examined via the following steps:
+<ol>
+<li>Go to <A HREF="https://econdata.shinyapps.io/voting_data1/">https://econdata.shinyapps.io/voting_data1/</A>
+<li>Set STATE to NC
+<li>Verify that YEAR is set to 2024
+<li>Verify that ELECTION to 1105_GE
+<li>Verify that COUNTY is set to (all)
+<li>Set that VOTETYPE to Early
+<li>Verify that OFFICE is set to US PRESIDENT
+<li>Click the 'TO Histogram' tab
+<li>Set Step on the second sidepanel from the left to 1.42857.
+</ol>
+This should display the following voter turnout histogram:
+<p>
+<img src="vdata_tohist_pres24NC_early_70bins_screen.png" alt="">
+<p>
+This histogram looks similar to the first of the following two histograms from ETA's analysis titled <A HREF="https://electiontruthalliance.org/analysis/north-carolina/">"North Carolina | 2024 U.S. Election Analysis | Longform"</A>:
+<p>
+<div class="container">
+  <img src="vdata_tohist_pres24NC_early_70bins_eta.png" class="half">
+  <img src="vdata_tohist_pres24NC_eday_70bins_eta.png" class="half">
+</div>
+<p>
+The ETA analysis states the following in regards to these two histograms:
+<p><b>
+In North Carolina, however, the two primary methods of voting - Early Voting and Election Day - both display turnout patterns consistent with vote manipulation, albeit to different extents.
+</b><p>
+The analysis goes on to explain the reason for this.  In any case, the following histogram on the left is obtained by following the prior steps (from the beginning of this section) except for setting Step to 1.42857.  Changing VOTETYPE from <b>Early</b> to <b>ElectionDay</b> will then result in the histogram on the right.
+<p>
+<div class="container">
+  <img src="vdata_tohist_pres24NC_early_50bins.png" class="half" alt="">
+  <img src="vdata_tohist_pres24NC_eday_50bins.png" class="half" alt="">
+</div>
+As can be seen, the bins look a little bit wider in the above histograms than those in the ETA analysis.  Careful inspection of the histograms in the ETA analysis reveals that each span of 10 percent in the x-axis consists of 7 bins.  This results in a bit width (or step) of 10 divided by 7 which equals about 1.42857.  Changing Step in the second to the left side panel from 2 to 1.42857 causes these two histograms to appear as follows:
+<p>
+<div class="container">
+  <img src="vdata_tohist_pres24NC_early_70bins.png" class="half" alt="">
+  <img src="vdata_tohist_pres24NC_eday_70bins.png" class="half" alt="">
+</div>
+These histograms now look much more like those in the ETA analysis.  Clicking the DEM symbol in the legend in the upper right will hide the Democrat histogram, causing just the Republican histogram to display as follows:
+<p>
+<div class="container">
+  <img src="vdata_tohist_pres24NC_early_70bins_rep.png" class="half" alt="">
+  <img src="vdata_tohist_pres24NC_eday_70bins_rep.png" class="half" alt="">
+</div>
+now clicking both the DEM and REP symbols in the legend in the upper right will cause this to switch, hiding the Republican histogram, causing just the Democrat histogram to display as follows:
+<p>
+<div class="container">
+  <img src="vdata_tohist_pres24NC_early_70bins_dem.png" class="half" alt="">
+  <img src="vdata_tohist_pres24NC_eday_70bins_dem.png" class="half" alt="">
+</div>
+<p>
 <hr>
 If anyone should run into any issues or have any suggestions for additional features, feel free to let me know via the Contact Form in the left margin of <A HREF="http://usbudget.blogspot.com/">this page</A>.
 <hr>

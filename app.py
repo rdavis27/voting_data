@@ -27,7 +27,7 @@ with open("voting_data.htm", 'r') as file:
     html_as_string = file.read()
 
 app_ui = ui.page_sidebar(
-     ui.sidebar(
+    ui.sidebar(
         ui.input_select(
             "state",
             "STATE",
@@ -81,13 +81,15 @@ app_ui = ui.page_sidebar(
         ui.input_checkbox("demrep","DEM/REP only", True),
         ui.input_checkbox("demrep_comb","DEM/REP combine", True),
         ui.input_checkbox("calctotal","Calculate Total", True),
-        ui.input_checkbox("varysize","Dot Size by Total", True),
         ui.input_checkbox("to_party","Turnout by Party", False),
         ui.input_checkbox("by_county","Plot by County", False),
         ui.input_checkbox("plot_percent","Plot percent", False),
-         ui.input_numeric("minvotes","Min Votes Displayed",value=10,min=0),
         ui.layout_columns(
+            ui.input_numeric("mindotsize","MIn Dot Size",value=1,min=0,step=1),
             ui.input_numeric("maxdotsize","Max Dot Size",value=15,min=1),
+        ),
+        ui.layout_columns(
+            ui.input_numeric("minvotes","Min Votes Disp.",value=10,min=0),
             ui.input_numeric("decimals","Decimal Places",value=1,min=0)
         ),
         ui.layout_columns(
@@ -104,6 +106,17 @@ app_ui = ui.page_sidebar(
         ui.nav_panel(
             "Turnout",
             output_widget("turnout")
+        ),
+        ui.nav_panel(
+            "TO Histogram",
+            ui.layout_sidebar(
+                ui.sidebar(
+                    ui.input_numeric(id="histmin", label="Min", value=0),
+                    ui.input_numeric(id="histmax", label="Max", value=100),
+                    ui.input_numeric(id="histstp", label="Step",value=2)
+                ),
+                output_widget("histogram")
+            )
         ),
         ui.nav_panel(
             "Dropoff",
@@ -286,10 +299,10 @@ def server(input, output, session):
             if (type(pgroup) != type(None) and pgroup != "(all)"):
                 ee = ee[ee['precinct'].str.startswith(pgroup)]
             ee = ee[ee['votetype'] == input.votetype()]
-            if input.varysize():
-                ee['size'] = ee['total']
-            else:
-                ee['size'] = input.minvotes()
+            ee['size'] = ee['total']
+            if input.mindotsize() > 0:
+                minvalsize = max(ee['total']) * input.mindotsize() / input.maxdotsize()
+                ee['size'][ee['size'] < minvalsize] = minvalsize
             if input.by_county():
                 area = "County"
             else:
@@ -326,10 +339,10 @@ def server(input, output, session):
             if (type(pgroup) != type(None) and pgroup != "(all)"):
                 ee = ee[ee['precinct'].str.startswith(pgroup)]
             ee = ee[ee['votetype'] == input.votetype()]
-            if input.varysize():
-                ee['size'] = ee['total']
-            else:
-                ee['size'] = input.minvotes()
+            ee['size'] = ee['total']
+            if input.mindotsize() > 0:
+                minvalsize = max(ee['total']) * input.mindotsize() / input.maxdotsize()
+                ee['size'][ee['size'] < minvalsize] = minvalsize
             if input.to_party():
                 ee = ee.assign(turnout = 100 * ee['votes'] / ee['registered'])
             else:
@@ -391,10 +404,9 @@ def server(input, output, session):
                 xx = get_precinct_indices(ff)
                 ff['index'] = ff['precinct'].map(xx)
             ff['size'] = ff['total1']
-            if input.varysize():
-                ff['size'] = ff['total1']
-            else:
-                ff['size'] = input.minvotes()
+            if input.mindotsize() > 0:
+                minvalsize = max(ff['total1']) * input.mindotsize() / input.maxdotsize()
+                ff['size'][ff['size'] < minvalsize] = minvalsize
             if input.by_county():
                 area = "County"
             else:
@@ -441,7 +453,36 @@ def server(input, output, session):
         else:
             print("WARNING: Must add at least two races to RACES textbox")
             return(None)
-        
+    
+    @render_widget
+    def histogram():
+        print("START histogram()") #DEBUG_PRINT
+        dd = get_race()
+        if (type(dd) != type(None)):
+            print("BEFORE filter_data, len(dd)="+str(len(dd))) #DEBUG_TMP
+            ee = filter_data(dd)
+            if input.to_party():
+                ee = ee.assign(turnout = 100 * ee['votes'] / ee['registered'])
+            else:
+                ee = ee.assign(turnout = 100 * ee['total'] / ee['registered'])
+            print(" AFTER filter_data, len(ee)="+str(len(ee))) #DEBUG_TMP
+            if input.by_county():
+                area = "County"
+            else:
+                area = "Precinct"
+            title = ""
+            if (type(input.county()) == str):
+                if (len(ee) > 0):
+                    title = input.county()+" County, "+state0+": "+list(ee.office)[0]+" Sum of Votes by "+area+" Turnout Percentage, "+edate0
+                else:
+                    title = input.county()+" County, "+state0+": Candidate Sum of Votes by "+area+" Turnout Percentage, "+edate0
+
+            fig = px.histogram(ee, x="turnout", y="votes", color="party", title=title,
+                               barmode="overlay", range_x=(input.histmin(),input.histmax()))
+            fig.update_traces(xbins=dict(start=input.histmin(),end=input.histmax(),size=input.histstp()))
+            fig.update_layout(xaxis_title=area+" Turnout Percentage of "+input.votetype()+" Votes<br><i>Sources: see https://econdataus.com/voting_data.htm</i>")
+            return(fig)
+    
     @render.data_frame
     def summary_data():
         print("START summary_data()") #DEBUG_PRINT
@@ -598,10 +639,22 @@ def server(input, output, session):
                     zz['office'].replace("President of the US", "US President", inplace=True)
                     choices = sorted(list(set(zz.office)))
                     choice0="US President"
-                if (choices.__contains__("President")):
-                    choice0="President"
-                if (choices.__contains__("U.S. President")):
+                elif (choices.__contains__("US President")):
+                    choice0="US President"
+                elif (choices.__contains__("U.S. President")):
                     choice0="U.S. President"
+                elif (choices.__contains__("President")):
+                    choice0="President"
+                elif (choices.__contains__("PRESIDENT OF THE US")):
+                    zz['office'].replace("PRESIDENT OF THE US", "US PRESIDENT", inplace=True)
+                    choices = sorted(list(set(zz.office)))
+                    choice0="US PRESIDENT"
+                elif (choices.__contains__("US PRESIDENT")):
+                    choice0="US PRESIDENT"
+                elif (choices.__contains__("U.S. PRESIDENT")):
+                    choice0="U.S. PRESIDENT"
+                elif (choices.__contains__("PRESIDENT")):
+                    choice0="PRESIDENT"
                 ui.update_select(
                     "office",
                     choices=choices,
