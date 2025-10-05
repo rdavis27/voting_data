@@ -385,9 +385,11 @@ def server(input, output, session):
             ee = ee.rename(columns={'office':'office2','votes':'votes2','total':'total2','candidate':'candidate2','voteshare':'voteshare2'})
             ff = pd.merge(dd, ee, how="outer", on=["county", "precinct", "district","party","votetype"])
             if input.plot_percent():
+                #ff <- ff[ff['votes1'] != 0] #DEBUG_TRY
                 ff['dropoff'] = 100 * (ff['votes1'] - ff['votes2']) / ff["votes1"]
                 ff['dropoff'][ff['dropoff'] == -np.inf] = None
                 ff['dropoff'][ff['dropoff'] ==  np.inf] = None
+                #ff['dropoff'][ff['dropoff'] ==  np.nan] = None #DEBUG_TRY
                 yunits = "Votes (percent)"
             else:
                 ff['dropoff'] = ff['votes1'] - ff['votes2']
